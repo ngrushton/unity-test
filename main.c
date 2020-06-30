@@ -7,9 +7,9 @@
 void setUp(void) {}
 void tearDown(void) {}
 
-static bool config_parse(const char *str, char *key_string, char *value_string, char *request_string) {
+static bool parse(const char *str, char *val1_string, char *val2_string, char *val3_string) {
 
-    const int tokens = sscanf(str, "set-config key=%63s value=%63s request=%63s\r\n", key_string, value_string, request_string);
+    const int tokens = sscanf(str, "parse val1=%63s val2=%63s val3=%63s\r\n", val1_string, val2_string, val3_string);
 
     if (tokens != 3) {
         return false;
@@ -20,33 +20,32 @@ static bool config_parse(const char *str, char *key_string, char *value_string, 
     }
 }
 
-static void check_config_parse(const char *input, const char *exp_key, const char *exp_val, const char *exp_req) {
-    // int bytes = -1;
+static void check_parse(const char *input, const char *exp_val1, const char *exp_val2, const char *exp_val3) {
 
-    char key[64];
-    char val[64];
-    char req[64];
-    const bool parsed = config_parse(input, key, val, req);
+    char val1[64];
+    char val2[64];
+    char val3[64];
+    const bool parsed = parse(input, val1, val2, val3);
 
-    printf("Key: %s\r\n", key);
-    printf("Value: %s\r\n", val);
-    printf("Req: %s\r\n", req);
+    printf("Val1: %s\r\n", val1);
+    printf("Val1: %s\r\n", val2);
+    printf("Val2: %s\r\n", val3);
 
     TEST_ASSERT(parsed);
-    TEST_ASSERT_EQUAL_STRING(exp_key, key);
-    TEST_ASSERT_EQUAL_STRING(exp_val, val);
-    TEST_ASSERT_EQUAL_STRING(exp_req, req);
+    TEST_ASSERT_EQUAL_STRING(exp_val1, val1);
+    TEST_ASSERT_EQUAL_STRING(exp_val2, val2);
+    TEST_ASSERT_EQUAL_STRING(exp_val3, val3);
 }
 
-static void test_config_parsing() {
+static void test_parsing() {
     printf("\nTEST 1\n");
-    check_config_parse("set-config key=api.token value=12 request=25465\r\n", "api.token", "12", "25465");
+    check_parse("parse val1=Test val2=1234522 val3=we987y9A&Y)*&\r\n", "Test", "1234522", "we987y9A&Y)*&");
     printf("\nTEST 2\n");
-    check_config_parse("set-config key=api.token value=wfjjbihfd238rrwdf request=12345\r\n", "api.token", "wfjjbihfd238rrwdf", "12345");
+    check_parse("parse val1=Liverpool val2=Premier-League val3=Champions\r\n", "Liverpool", "Premier-League", "Champions");
 }
 
  int main() {
      UNITY_BEGIN();
-     RUN_TEST(test_config_parsing);
+     RUN_TEST(test_parsing);
      return UNITY_END();
  }
